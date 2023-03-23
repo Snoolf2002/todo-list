@@ -32,8 +32,14 @@ def index(request: HttpRequest) -> JsonResponse:
         decoded = request.body.decode()
         user = json.loads(decoded)
 
-        username = user['username']
-        password = user['password']
+        username = user.get("username")
+        password = user.get('password')
+
+        if username == None:
+            return JsonResponse({'error': "Username field is required"})
+        if password == None:
+            return JsonResponse({'error': "Password field is required"})
+        
         user = authenticate(username=username, password=password)
         
         if user is not None:
