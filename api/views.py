@@ -3,6 +3,7 @@ from django.http import HttpResponse, JsonResponse, HttpRequest
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 import json
+from base64 import b64decode
 # Create your views here.
 
 
@@ -29,11 +30,17 @@ class HomeView(View):
 def index(request: HttpRequest) -> JsonResponse:
 
     if request.method == 'POST':
-        decoded = request.body.decode()
-        user = json.loads(decoded)
+        # decoded = request.body.decode()
+        # user = json.loads(decoded)
 
-        username = user.get("username")
-        password = user.get('password')
+        auth = request.headers.get('Authorization')
+        # print(auth)
+        token = auth.split(' ')[1]
+        auth = b64decode(token).decode()
+        username, password = auth.split(':')
+
+        # username = user.get("username")
+        # password = user.get('password')
 
         if username == None:
             return JsonResponse({'error': "Username field is required"})
